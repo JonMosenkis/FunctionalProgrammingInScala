@@ -6,3 +6,4 @@ lazy val root = (project in file("."))
   .settings(
     name := "FunctionalProgrammingInScala"
   )
+libraryDependencies ++= Seq("org.specs2" %% "specs2-core" % "5.2.0" % "test")

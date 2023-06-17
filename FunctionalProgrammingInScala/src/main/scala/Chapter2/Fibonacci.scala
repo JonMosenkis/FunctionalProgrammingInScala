@@ -3,8 +3,6 @@ package Chapter2
 import scala.annotation.tailrec
 
 object Fibonacci {
-  @main def main(): Unit = println(fib(19))
-
 
   def fib(n: Int): Int =
     @tailrec
