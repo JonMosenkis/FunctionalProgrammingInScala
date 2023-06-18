@@ -28,4 +28,8 @@ object SimpleList:
       case Nil => Nil
       case Cons(_, tail) => drop(tail, n-1)
 
-  def dropWhile[A](list: SimpleList[A], predicate: A => Boolean): SimpleList[A] = ???
+  def dropWhile[A](list: SimpleList[A], predicate: A => Boolean): SimpleList[A] = list match
+    case Nil => Nil
+    case Cons(head, tail) =>
+      if predicate(head) then dropWhile(tail, predicate)
+      else Cons(head, dropWhile(tail, predicate))
