@@ -57,4 +57,4 @@ object SimpleList:
   def append[A](listA: SimpleList[A], listB: SimpleList[A]): SimpleList[A] =
     foldRight(listA, listB, (head, tail) => Cons(head, tail))
 
-  def concat[A](lists: SimpleList[SimpleList[A]]): SimpleList[A] = foldLeft(lists, Nil: SimpleList[A], append)
+  def concat[A](lists: SimpleList[SimpleList[A]]): SimpleList[A] = foldRight(lists, Nil: SimpleList[A], append)
