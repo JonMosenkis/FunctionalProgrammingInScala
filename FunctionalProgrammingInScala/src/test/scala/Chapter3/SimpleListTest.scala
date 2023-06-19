@@ -48,6 +48,14 @@ class SimpleListTest extends Specification {
     "concat" >> {
       SimpleList.concat(SimpleList(SimpleList(1, 2), SimpleList(3, 4), SimpleList(5, 6))) must beEqualTo(SimpleList(1, 2, 3, 4, 5, 6))
     }
+
+    "addOne" >> {
+      SimpleList.addOne(SimpleList(1, 2, 4)) must beEqualTo(SimpleList(2, 3, 5))
+    }
+
+    "asString" >> {
+      SimpleList.asStrings(SimpleList(1.0, 2.0)) must beEqualTo(SimpleList("1.0", "2.0"))
+    }
   }
 
 

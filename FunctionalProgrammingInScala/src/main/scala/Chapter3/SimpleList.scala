@@ -58,3 +58,9 @@ object SimpleList:
     foldRight(listA, listB, (head, tail) => Cons(head, tail))
 
   def concat[A](lists: SimpleList[SimpleList[A]]): SimpleList[A] = foldRight(lists, Nil: SimpleList[A], append)
+
+  def addOne(list: SimpleList[Int]): SimpleList[Int] = map(list, _+1)
+  
+  def asStrings(list: SimpleList[Double]): SimpleList[String] = map(list, _.toString)
+  
+  def map[A, B](list: SimpleList[A], f: A => B): SimpleList[B] = foldRight(list, Nil: SimpleList[B], (a, b) => Cons(f(a), b))
