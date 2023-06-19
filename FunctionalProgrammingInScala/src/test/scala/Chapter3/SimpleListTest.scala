@@ -56,6 +56,24 @@ class SimpleListTest extends Specification {
     "asString" >> {
       SimpleList.asStrings(SimpleList(1.0, 2.0)) must beEqualTo(SimpleList("1.0", "2.0"))
     }
+
+    "filter" >> {
+      SimpleList.filter(SimpleList(1, 2, 3, 4, 5), _ % 2 == 0)  must beEqualTo(SimpleList(2, 4))
+    }
+
+    "flatMap" >> {
+      SimpleList.flatMap(SimpleList(1, 2), a => SimpleList(a, a)) must beEqualTo(SimpleList(1, 1, 2, 2))
+    }
+
+    "addTogether" >> {
+      SimpleList.addTogether(SimpleList(1, 2, 3), SimpleList(4, 5, 6)) must beEqualTo(SimpleList(5, 7, 9))
+    }
+
+    "zipTogether" >> {
+      SimpleList.zipTogether(SimpleList(1, 2), SimpleList("a", "b"), (n, l) => s"$l${n.toString}") must beEqualTo(
+        SimpleList("a1", "b2")
+      )
+    }
   }
 
 

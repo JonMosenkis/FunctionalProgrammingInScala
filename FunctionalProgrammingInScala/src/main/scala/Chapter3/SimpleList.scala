@@ -60,7 +60,30 @@ object SimpleList:
   def concat[A](lists: SimpleList[SimpleList[A]]): SimpleList[A] = foldRight(lists, Nil: SimpleList[A], append)
 
   def addOne(list: SimpleList[Int]): SimpleList[Int] = map(list, _+1)
-  
+
   def asStrings(list: SimpleList[Double]): SimpleList[String] = map(list, _.toString)
-  
+
   def map[A, B](list: SimpleList[A], f: A => B): SimpleList[B] = foldRight(list, Nil: SimpleList[B], (a, b) => Cons(f(a), b))
+
+  def filter[A](list: SimpleList[A], predicate: A => Boolean): SimpleList[A] =
+    def addIf(a: A): SimpleList[A] =
+      if predicate(a) then Cons(a, Nil)
+      else Nil
+
+    flatMap(list, addIf)
+
+  def flatMap[A, B](list: SimpleList[A], f: A => SimpleList[B]): SimpleList[B] = concat(map(list, f))
+
+  def addTogether(listA: SimpleList[Int], listB: SimpleList[Int]): SimpleList[Int] = (listA, listB) match
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(ha, tlA), Cons(hb, tlB)) => Cons(ha + hb, addTogether(tlA, tlB))
+
+  def zipTogether[A, B, C](listA: SimpleList[A], listB: SimpleList[B], f: (A, B) => C): SimpleList[C] =
+    @tailrec
+    def loop(la: SimpleList[A], lb: SimpleList[B], acc: SimpleList[C]): SimpleList[C] = (la, lb) match
+      case (Nil, _) => acc
+      case (_, Nil) => acc
+      case (Cons(ha, ta), Cons(hb, tb)) => loop(ta, tb, Cons(f(ha, hb), acc))
+
+    reverse(loop(listA, listB, Nil: SimpleList[C]))
