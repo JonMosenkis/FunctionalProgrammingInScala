@@ -87,3 +87,17 @@ object SimpleList:
       case (Cons(ha, ta), Cons(hb, tb)) => loop(ta, tb, Cons(f(ha, hb), acc))
 
     reverse(loop(listA, listB, Nil: SimpleList[C]))
+
+  def hasPrefix[A](seq: SimpleList[A], subSeq: SimpleList[A]): Boolean = 
+    if length(subSeq) > length(seq) then false
+    else
+      foldLeft(zipTogether(seq, subSeq, _ == _), true, _ && _)
+  
+  def hasSubsequence[A](seq: SimpleList[A], subSeq: SimpleList[A]): Boolean =
+    @tailrec
+    def loop(a: SimpleList[A]): Boolean = a match
+      case a if hasPrefix(a, subSeq) => true
+      case Nil => false
+      case Cons(_, tail) => loop(tail)
+      
+    loop(seq)

@@ -74,6 +74,16 @@ class SimpleListTest extends Specification {
         SimpleList("a1", "b2")
       )
     }
+
+    "hasPrefix" >> {
+      SimpleList.hasPrefix(SimpleList(1, 2, 3, 4), SimpleList(1, 2)) must beTrue
+      SimpleList.hasPrefix(SimpleList(1, 2, 3, 4), SimpleList(1, 3)) must beFalse
+    }
+
+    "hasSubsequence" >> {
+      SimpleList.hasSubsequence(SimpleList(1, 2, 3, 4), SimpleList(2, 3)) must beTrue
+      SimpleList.hasSubsequence(SimpleList(1, 2), SimpleList(8)) must beFalse
+    }
   }
 
 
