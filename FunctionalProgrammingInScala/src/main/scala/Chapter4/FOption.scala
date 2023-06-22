@@ -25,6 +25,19 @@ enum FOption[+A] {
 
 object FOption {
   def apply[A](value: A): FOption[A] = FSome(value)
+
+  def nonEmpty[A](l: Seq[A]): FOption[Seq[A]] =
+    if l.isEmpty then FNone
+    else FSome(l)
+
+  def mean(values: Seq[Double]): FOption[Double] =
+    nonEmpty(values).map(_.reduce(_ + _)).map(_ / values.length)
+
+  def variance(values: Seq[Double]): FOption[Double] = for {
+    average <- mean(values)
+    squaredDeviations = values.map(value => math.pow(value - average, 2))
+  } yield squaredDeviations.sum / values.length
+
 }
 
 
