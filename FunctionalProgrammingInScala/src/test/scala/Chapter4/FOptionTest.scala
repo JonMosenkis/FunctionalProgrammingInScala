@@ -32,6 +32,15 @@ class FOptionTest  extends Specification {
       FOption.variance(Seq(1, 2, -2, 4, -3).map(_.toDouble)).getOrElse(-1.0) must beCloseTo(6.64, 0.01)
       FOption.variance(Seq.empty[Double]) must beEqualTo(FNone)
     }
+    "map2" >> {
+      FOption.map2(FSome(1), FSome(2))(_ + _) must beEqualTo(FSome(3))
+      FOption.map2(FSome(1), FSome(2).filter(_ % 2 == 1))(_ + _) must beEqualTo(FNone)
+    }
+    "sequence" >> {
+      FOption.sequence(List(FSome(1), FSome(2))) must beEqualTo(FSome(List(1, 2)))
+      FOption.sequence(List(FSome(1), FSome(2).filter(_ % 2 == 1))) must beEqualTo(FNone)
+      FOption.sequence(List()) must beEqualTo(FOption(List()))
+    }
 
   }
 

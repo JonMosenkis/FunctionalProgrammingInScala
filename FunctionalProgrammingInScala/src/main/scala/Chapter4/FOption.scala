@@ -38,6 +38,16 @@ object FOption {
     squaredDeviations = values.map(value => math.pow(value - average, 2))
   } yield squaredDeviations.sum / values.length
 
+  def map2[A, B, C](oa: FOption[A], ob: FOption[B])(f: (A, B) => C): FOption[C] = for
+      a <- oa
+      b <- ob
+    yield f(a, b)
+
+  def sequence[A](as: List[FOption[A]]): FOption[List[A]] =
+    as.foldRight(FSome(List.empty[A]))(
+      (oa, optionList) => oa.flatMap(a => optionList.map(l => a :: l))
+    )
+
 }
 
 
