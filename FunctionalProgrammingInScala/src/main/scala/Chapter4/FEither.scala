@@ -16,9 +16,17 @@ enum FEither[+E, +A] {
     case FLeft(_) => ob
     case _ => this
 
-
-  def map2[EE >: E, B, C](that: FEither[EE, B])(f: (A, B) => C): FEither[EE, C] = for 
+  def map2[EE >: E, B, C](that: FEither[EE, B])(f: (A, B) => C): FEither[EE, C] = for
       a <- this
       b <- that
-    yield f(a, b) 
+    yield f(a, b)
+}
+
+object FEither {
+  def traverse[E, A, B](as: List[A])(f: A => FEither[E, B]): FEither[E, List[B]] =
+    as.foldRight(FRight(List.empty[B]))(
+      (a, rightList: FEither[E, List[B]]) => f(a).map2(rightList)(_ :: _)
+    )
+
+  def sequence[E, A](as: List[FEither[E, A]]): FEither[E, List[A]] = traverse(as)(a => a)
 }
