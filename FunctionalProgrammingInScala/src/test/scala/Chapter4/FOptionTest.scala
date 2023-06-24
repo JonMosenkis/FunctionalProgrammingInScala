@@ -42,6 +42,12 @@ class FOptionTest  extends Specification {
       FOption.sequence(List()) must beEqualTo(FOption(List()))
     }
 
+    "traverse" >> {
+      def f(v: Int): FOption[Int] = if v % 2 == 0 then FSome(v*v) else FNone
+
+      FOption.traverse(List(1, 2, 3))(f) must beEqualTo(FNone)
+      FOption.traverse(List(2, 4, 6))(f) must beEqualTo(FSome(List(4, 16, 36)))
+    }
   }
 
 }

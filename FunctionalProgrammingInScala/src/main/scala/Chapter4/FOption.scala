@@ -44,8 +44,11 @@ object FOption {
     yield f(a, b)
 
   def sequence[A](as: List[FOption[A]]): FOption[List[A]] =
-    as.foldRight(FSome(List.empty[A]))(
-      (oa, optionList) => oa.flatMap(a => optionList.map(l => a :: l))
+    traverse(as)(a => a)
+
+  def traverse[A, B](as: List[A])(f: A => FOption[B]): FOption[List[B]] =
+    as.foldRight(FSome(List.empty[B]))(
+      (a, optionList) => map2(f(a), optionList)(_ :: _)
     )
 
 }
