@@ -1,5 +1,7 @@
 package Chapter5
 
+import Chapter5.FLazyList.empty
+
 import scala.annotation.tailrec
 
 enum FLazyList[+A] {
@@ -13,6 +15,23 @@ enum FLazyList[+A] {
       case Cons(head, tail) => loop(tail(), head() :: acc)
 
     loop(this, List.empty[A])
+
+  def take(n: Int): FLazyList[A] = this match
+    case Cons(head, tail) if n > 1 => FLazyList.cons(head(), tail().take(n-1))
+    case Cons(head, tail) if n == 1 => FLazyList.cons(head(), empty)
+    case _ => empty
+
+  def drop(n: Int): FLazyList[A] = this match
+    case Cons(head, tail) if n > 0 => tail().drop(n-1)
+    case _ => this
+
+  def takeWhile(predicate: A => Boolean): FLazyList[A] = this match
+    case Cons(head, tail) =>
+      val hh: A = head()
+      if predicate(hh) then
+        FLazyList.cons(hh, tail().takeWhile(predicate))
+      else empty
+    case _ => empty
 }
 
 object FLazyList {
