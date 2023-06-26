@@ -32,6 +32,13 @@ enum FLazyList[+A] {
         FLazyList.cons(hh, tail().takeWhile(predicate))
       else empty
     case _ => empty
+
+  def foldRight[B](acc: => B)(f: (A, => B) => B): B = this match
+    case Cons(h, t) => f(h(), t().foldRight(acc)(f))
+    case _ => acc
+
+  def forAll(p: A => Boolean): Boolean =
+    foldRight(true)((a, b) => p(a) && b)
 }
 
 object FLazyList {
