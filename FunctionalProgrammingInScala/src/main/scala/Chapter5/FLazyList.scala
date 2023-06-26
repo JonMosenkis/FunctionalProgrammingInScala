@@ -1,6 +1,6 @@
 package Chapter5
 
-import Chapter5.FLazyList.empty
+import Chapter5.FLazyList.{cons, empty}
 
 import scala.annotation.tailrec
 
@@ -25,13 +25,8 @@ enum FLazyList[+A] {
     case Cons(head, tail) if n > 0 => tail().drop(n-1)
     case _ => this
 
-  def takeWhile(predicate: A => Boolean): FLazyList[A] = this match
-    case Cons(head, tail) =>
-      val hh: A = head()
-      if predicate(hh) then
-        FLazyList.cons(hh, tail().takeWhile(predicate))
-      else empty
-    case _ => empty
+  def takeWhile(predicate: A => Boolean): FLazyList[A] =
+    foldRight(empty[A])((a, acc) => if predicate(a) then cons(a, acc) else empty)
 
   def foldRight[B](acc: => B)(f: (A, => B) => B): B = this match
     case Cons(h, t) => f(h(), t().foldRight(acc)(f))
@@ -39,6 +34,14 @@ enum FLazyList[+A] {
 
   def forAll(p: A => Boolean): Boolean =
     foldRight(true)((a, b) => p(a) && b)
+
+  def headOption(): Option[A] = foldRight(Option.empty)((a, _) => Some(a))
+
+  def filter(f: A => Boolean): FLazyList[A] = ???
+
+  def map[B](f: A => B): FLazyList[B] = ???
+
+  def flatMap[B](f: A => FLazyList[B]): FLazyList[B] = ???
 }
 
 object FLazyList {

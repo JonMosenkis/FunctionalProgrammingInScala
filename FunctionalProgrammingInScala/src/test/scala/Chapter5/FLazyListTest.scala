@@ -34,6 +34,10 @@ class FLazyListTest extends Specification {
       FLazyList(2, 3, 6).forAll(predicate) must beFalse
       counter.counts must beEqualTo(2)
     }
+    "headOption" >> {
+      FLazyList(1, 2, 3).headOption() must beSome(1)
+      FLazyList.empty.headOption() must beNone
+    }
   }
 
 }
