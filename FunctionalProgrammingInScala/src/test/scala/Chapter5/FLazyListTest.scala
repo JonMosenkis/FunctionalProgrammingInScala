@@ -50,6 +50,15 @@ class FLazyListTest extends Specification {
     "flatMap" >> {
       FLazyList(1, 2, 3).flatMap(x => FLazyList(x*2, x*2)).toList must beEqualTo(List(2, 2, 4, 4, 6, 6))
     }
+    "continually" >> {
+      FLazyList.continually(2).take(3).toList must beEqualTo(List(2, 2, 2))
+    }
+    "from" >> {
+      FLazyList.from(3).take(3).toList must beEqualTo(List(3, 4, 5))
+    }
+    "fibs" >> {
+      FLazyList.fibs().take(7).toList must beEqualTo(List(0, 1, 1, 2, 3, 5, 8))
+    }
   }
 
 }

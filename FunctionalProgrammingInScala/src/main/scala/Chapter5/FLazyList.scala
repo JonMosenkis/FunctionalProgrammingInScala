@@ -61,4 +61,21 @@ object FLazyList {
   def apply[A](as: A*): FLazyList[A] =
     if as.isEmpty then empty[A]
     else cons(as.head, apply(as.tail*))
+
+  def continually[A](a: A): FLazyList[A] = unfold(a)(_ => Some((a, a)))
+
+  def from(n: Int): FLazyList[Int] = unfold(n)(l => Some((l, l + 1)))
+
+  def fibs(): FLazyList[Int] =
+    def internal(prev: Int, prePrev: Int): FLazyList[Int] =
+      val cur = prev + prePrev
+      cons(cur, internal(cur, prev))
+
+    FLazyList(0, 1).append(internal(1, 0))
+
+  def unfold[A, S](state: S)(f: S => Option[(A, S)]): FLazyList[A] =
+    f(state).map {
+      case (a, s) => cons(a, unfold(s)(f))
+    }.getOrElse(empty[A])
+
 }
