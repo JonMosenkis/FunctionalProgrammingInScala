@@ -1,6 +1,6 @@
 package Chapter5
 
-import Chapter5.FLazyList.{cons, empty}
+import Chapter5.FLazyList.{cons, empty, unfold}
 
 import scala.annotation.tailrec
 
@@ -40,8 +40,10 @@ enum FLazyList[+A] {
   def filter(predicate: A => Boolean): FLazyList[A] =
     foldRight(empty[A])((a, acc) => if predicate(a) then cons(a, acc) else acc)
 
-  def map[B](f: A => B): FLazyList[B] =
-    foldRight(empty[B])((a, acc) => cons(f(a), acc))
+  def map[B](f: A => B): FLazyList[B] = unfold(this) {
+    case Cons(head, tail) => Some((f(head()), tail()))
+    case Empty => None
+  }
 
   def flatMap[B](f: A => FLazyList[B]): FLazyList[B] =
     foldRight(empty[B])((a, acc) => f(a).append(acc))
