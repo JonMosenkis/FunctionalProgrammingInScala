@@ -38,6 +38,18 @@ class FLazyListTest extends Specification {
       FLazyList(1, 2, 3).headOption() must beSome(1)
       FLazyList.empty.headOption() must beNone
     }
+    "append" >> {
+      FLazyList(1, 2).append(FLazyList(3, 4)).toList must beEqualTo(List(1, 2, 3, 4))
+    }
+    "filter" >> {
+      FLazyList(1, 2 ,3 ,4).filter(_ < 3).toList must beEqualTo(List(1, 2))
+    }
+    "map" >> {
+      FLazyList(1, 2, 3, 4).map(_ * 2).toList must beEqualTo(List(2, 4, 6, 8))
+    }
+    "flatMap" >> {
+      FLazyList(1, 2, 3).flatMap(x => FLazyList(x*2, x*2)).toList must beEqualTo(List(2, 2, 4, 4, 6, 6))
+    }
   }
 
 }

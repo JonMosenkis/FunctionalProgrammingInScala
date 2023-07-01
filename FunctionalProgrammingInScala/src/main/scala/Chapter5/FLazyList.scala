@@ -37,11 +37,17 @@ enum FLazyList[+A] {
 
   def headOption(): Option[A] = foldRight(Option.empty)((a, _) => Some(a))
 
-  def filter(f: A => Boolean): FLazyList[A] = ???
+  def filter(predicate: A => Boolean): FLazyList[A] =
+    foldRight(empty[A])((a, acc) => if predicate(a) then cons(a, acc) else acc)
 
-  def map[B](f: A => B): FLazyList[B] = ???
+  def map[B](f: A => B): FLazyList[B] =
+    foldRight(empty[B])((a, acc) => cons(f(a), acc))
 
-  def flatMap[B](f: A => FLazyList[B]): FLazyList[B] = ???
+  def flatMap[B](f: A => FLazyList[B]): FLazyList[B] =
+    foldRight(empty[B])((a, acc) => f(a).append(acc))
+
+  def append[B >: A](that: => FLazyList[B]): FLazyList[B] =
+    foldRight(that)((a, acc) => cons(a, acc))
 }
 
 object FLazyList {
