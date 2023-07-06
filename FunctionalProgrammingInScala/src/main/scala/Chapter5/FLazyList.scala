@@ -16,17 +16,30 @@ enum FLazyList[+A] {
 
     loop(this, List.empty[A])
 
-  def take(n: Int): FLazyList[A] = this match
-    case Cons(head, tail) if n > 1 => FLazyList.cons(head(), tail().take(n-1))
-    case Cons(head, tail) if n == 1 => FLazyList.cons(head(), empty)
-    case _ => empty
+  def take(n: Int): FLazyList[A] =
+    unfold((this, n)) ((a, s) => a match
+      case Cons(head, tail) if s > 1 => Some(head(), (tail(), s - 1))
+      case Cons(head, tail) if s == 1 => Some(head(), (empty, 0))
+      case _ => None
+    )
 
   def drop(n: Int): FLazyList[A] = this match
     case Cons(head, tail) if n > 0 => tail().drop(n-1)
     case _ => this
 
   def takeWhile(predicate: A => Boolean): FLazyList[A] =
-    foldRight(empty[A])((a, acc) => if predicate(a) then cons(a, acc) else empty)
+    unfold(this) {
+      case Cons(h, t) if predicate(h()) => Some(h(), t())
+      case _ => None
+    }
+
+  def zipAll[B](that: FLazyList[B]): FLazyList[(Option[A], Option[B])] =
+    unfold((this, that)) {
+      case (Cons(ha, ta), Cons(hb, tb)) => Some((Some(ha()), Some(hb())), (ta(), tb()))
+      case (Cons(ha, ta), Empty) => Some((Some(ha()), None), (ta(), empty))
+      case (Empty, Cons(hb, tb)) => Some((None, Some(hb())), (empty, tb()))
+      case _ => None
+    }
 
   def foldRight[B](acc: => B)(f: (A, => B) => B): B = this match
     case Cons(h, t) => f(h(), t().foldRight(acc)(f))

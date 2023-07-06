@@ -59,6 +59,11 @@ class FLazyListTest extends Specification {
     "fibs" >> {
       FLazyList.fibs().take(7).toList must beEqualTo(List(0, 1, 1, 2, 3, 5, 8))
     }
+    "zipAll" >> {
+      FLazyList(1, 2, 3).zipAll(FLazyList("foo", "bar")).toList must beEqualTo(
+        List((Some(1), Some("foo")), (Some(2), Some("bar")), (Some(3), None))
+      )
+    }
   }
 
 }
