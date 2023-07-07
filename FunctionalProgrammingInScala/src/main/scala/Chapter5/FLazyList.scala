@@ -63,6 +63,22 @@ enum FLazyList[+A] {
 
   def append[B >: A](that: => FLazyList[B]): FLazyList[B] =
     foldRight(that)((a, acc) => cons(a, acc))
+
+  def startsWith[B >: A](prefix: FLazyList[B]): Boolean =
+    this.zipAll(prefix).takeWhile {
+      case (_, Some(_)) => true
+      case _ => false
+    } .forAll {
+      case (Some(a), Some(b)) => a == b
+      case _ => false
+    }
+
+  def tails(): FLazyList[FLazyList[A]] =
+    unfold(this) {
+      case Cons(head, tail) => Some(Cons(head, tail), tail())
+      case _ => None
+    }.append(FLazyList(empty))
+
 }
 
 object FLazyList {

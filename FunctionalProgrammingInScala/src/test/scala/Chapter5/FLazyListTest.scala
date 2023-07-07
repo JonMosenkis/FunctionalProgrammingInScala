@@ -64,6 +64,19 @@ class FLazyListTest extends Specification {
         List((Some(1), Some("foo")), (Some(2), Some("bar")), (Some(3), None))
       )
     }
+    "startsWith" >> {
+      FLazyList(1, 2, 3).startsWith(FLazyList(1, 2)) must beTrue
+      FLazyList(1, 2, 3).startsWith(FLazyList(2, 3)) must beFalse
+      FLazyList(1, 2, 3).startsWith(FLazyList.empty) must beTrue
+    }
+    "tails" >> {
+      FLazyList(1, 2, 3).tails().map(_.toList).toList must beEqualTo(List(
+        List(1, 2 ,3),
+        List(2, 3),
+        List(3),
+        List()
+      ))
+    }
   }
 
 }
