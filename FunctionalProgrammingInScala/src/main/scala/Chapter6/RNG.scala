@@ -4,8 +4,12 @@ import Chapter6.RNG.{double3, randomDouble}
 
 import scala.annotation.tailrec
 
+type Rand[+A] = RNG => (A, RNG)
+
 trait RNG {
   def nextInt: (Int, RNG)
+
+
 }
 
 case class SimpleRNG(seed: Long) extends RNG:
@@ -46,8 +50,19 @@ object RNG {
       val nextIter = (next._1 +: l, next._2)
       if nextIter._1.length == count then nextIter
       else loop(nextIter._1, nextIter._2)
-      
+
     loop(List.empty, rng)
+
+  val int: Rand[Int] = (rng: RNG) => rng.nextInt
+
+  def unit[A](a: A): Rand[A] = rng => (a, rng)
+
+  def map[A, B](s: Rand[A])(f: A => B): Rand[B] =
+    (rng: RNG) =>
+      val (a, rng2) = s(rng)
+      (f(a), rng2)
+
+
 }
 
 object Foo extends App {
