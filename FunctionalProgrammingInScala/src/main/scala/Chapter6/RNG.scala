@@ -2,6 +2,8 @@ package Chapter6
 
 import Chapter6.RNG.{double3, randomDouble}
 
+import scala.annotation.tailrec
+
 trait RNG {
   def nextInt: (Int, RNG)
 }
@@ -36,6 +38,16 @@ object RNG {
     val (d2, rng2) = randomDouble(rng1)
     val (d3, rng3) = randomDouble(rng2)
     ((d1, d2, d3), rng3)
+
+  def ints(count: Int)(rng: RNG): (List[Int], RNG) =
+    @tailrec
+    def loop(l: List[Int], r: RNG): (List[Int], RNG) =
+      val next = r.nextInt
+      val nextIter = (next._1 +: l, next._2)
+      if nextIter._1.length == count then nextIter
+      else loop(nextIter._1, nextIter._2)
+      
+    loop(List.empty, rng)
 }
 
 object Foo extends App {
