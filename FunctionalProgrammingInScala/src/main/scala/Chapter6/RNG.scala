@@ -40,15 +40,8 @@ object RNG {
     val (d3, rng3) = double(rng2)
     ((d1, d2, d3), rng3)
 
-  def ints(count: Int)(rng: RNG): (List[Int], RNG) =
-    @tailrec
-    def loop(l: List[Int], r: RNG): (List[Int], RNG) =
-      val next = r.nextInt
-      val nextIter = (next._1 +: l, next._2)
-      if nextIter._1.length == count then nextIter
-      else loop(nextIter._1, nextIter._2)
-
-    loop(List.empty, rng)
+  def ints(count: Int): Rand[List[Int]] =
+    sequence(List.fill(count)(int))
 
   def int: Rand[Int] = (rng: RNG) => rng.nextInt
 
@@ -68,6 +61,11 @@ object RNG {
   def both[A, B](ra: Rand[A], rb: Rand[B]): Rand[(A, B)] =
     map2(ra, rb)((_, _))
 
+  def sequence[A](rs: List[Rand[A]]): Rand[List[A]] =
+    rs.foldRight(unit(List.empty[A]))((a, b) => append(a, b))
+
+  def append[A](a: Rand[A], rl: Rand[List[A]]): Rand[List[A]] =
+    map2(a, rl)((value, list) => value :: list)
 
 }
 
