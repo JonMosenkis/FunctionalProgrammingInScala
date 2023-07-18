@@ -48,15 +48,14 @@ object RNG {
   def unit[A](a: A): Rand[A] = rng => (a, rng)
 
   def map[A, B](s: Rand[A])(f: A => B): Rand[B] =
-    (rng: RNG) =>
-      val (a, rng2) = s(rng)
-      (f(a), rng2)
+    flatMap(s)(a => unit(f(a)))
 
   def map2[A, B, C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] =
-    rng =>
-      val (a, rng1) = ra(rng)
-      val (b, rng2) = rb(rng1)
-      (f(a, b), rng2)
+    flatMap(ra)(
+      a => map(rb)(
+        b => f(a, b)
+      )
+    )
 
   def both[A, B](ra: Rand[A], rb: Rand[B]): Rand[(A, B)] =
     map2(ra, rb)((_, _))
@@ -66,6 +65,19 @@ object RNG {
 
   def append[A](a: Rand[A], rl: Rand[List[A]]): Rand[List[A]] =
     map2(a, rl)((value, list) => value :: list)
+
+  def flatMap[A, B](r: Rand[A])(f: A => Rand[B]): Rand[B] =
+    rng =>
+      val (a, rng1) = r(rng)
+      f(a)(rng1)
+
+  def nonNegativeLessThan(n: Int): Rand[Int] =
+    flatMap(nonNegativeInt)(
+      i =>
+        val mod = i %n
+        if i + (n-1) - mod >= 0 then unit(i) else nonNegativeLessThan(i)
+    )
+
 
 }
 
