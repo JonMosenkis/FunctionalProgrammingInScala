@@ -21,11 +21,26 @@ object State {
         b <- other
       yield f(a, b)
 
-    def sequence(states: List[State[S, A]]): State[S, List[A]] =
-      states.foldRight(unit[S, List[A]](List.empty[A]))(_.map2(_)(_ :: _))
+
+    def state(s: S): S = run(s)._2
+    def value(s: S): A = run(s)._1
 
   def apply[S, A](f: S => (A, S)): State[S, A] = f
 
   def unit[S, A](a: A): State[S, A] = (s: S) => (a, s)
+
+  def sequence[S, A](states: List[State[S, A]]): State[S, List[A]] =
+    states.foldRight(unit[S, List[A]](List.empty[A]))(_.map2(_)(_ :: _))
+
+  def get[S]: State[S, S] = s => (s, s)
+
+  def set[S](s: S): State[S, Unit] = _ => ((), s)
+
+  def modify[S](f: S => S): State[S, Unit] =
+    for
+      s <- get
+      _ <- set(f(s))
+    yield ()
+
 }
 
