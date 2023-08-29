@@ -30,6 +30,17 @@ object Par {
   def sequence[A](ps: List[Par[A]]): Par[List[A]] =
     ps.foldRight(unit(List.empty[A]))((pa, acc) => pa.map2(acc)(_ :: _))
 
+  def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] =
+    fork {
+      val fbs: List[Par[B]] = ps.map(asyncF(f))
+      sequence(fbs)
+    }
+
+  def parFilter[A](as: List[A])(f: A => Boolean): Par[List[A]] =
+    fork:
+      val pars: List[Par[Option[A]]] = as.map(asyncF(a => Some(a).filter(f)))
+      sequence(pars).map(_.flatten)
+
 
   private case class UnitFuture[A](get: A) extends Future[A]:
     override def cancel(mayInterruptIfRunning: Boolean): Boolean = false
