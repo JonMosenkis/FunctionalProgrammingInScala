@@ -24,6 +24,13 @@ object Par {
   def asyncF[A, B](f: A => B): A => Par[B] =
     a => lazyUnit(f(a))
 
+  extension[A] (pa: Par[A]) def map[B](f: A => B): Par[B] =
+    pa.map2(unit(()))((a, _) => f(a))
+
+  def sequence[A](ps: List[Par[A]]): Par[List[A]] =
+    ps.foldRight(unit(List.empty[A]))((pa, acc) => pa.map2(acc)(_ :: _))
+
+
   private case class UnitFuture[A](get: A) extends Future[A]:
     override def cancel(mayInterruptIfRunning: Boolean): Boolean = false
     override def isCancelled: Boolean = false
